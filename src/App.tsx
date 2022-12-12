@@ -1,26 +1,52 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useMemo } from "react";
+import { useDynamicTable, DynamicTable } from "savvycom-dynamic-filter";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  dob: string;
 }
 
-export default App;
+export default function App() {
+  const data = useMemo(
+    () => ({
+      headerUrl: "users/dynamic/fields",
+      dataTableUrl: "users/paging",
+      baseURL: "http://10.22.4.168:2443/",
+      sortColumns: ["email", "name"],
+    }),
+    []
+  );
+
+  const {
+    records,
+    handleChange,
+    pagination,
+    stateQuery,
+    properties,
+    metrics,
+    filters,
+    isLoading,
+    setStateQuery,
+    setFilters,
+    columns,
+  } = useDynamicTable<User>(data);
+
+  return (
+    <DynamicTable
+      data={records}
+      columns={columns}
+      onChange={handleChange}
+      pagination={pagination}
+      stateQuery={stateQuery}
+      properties={properties}
+      metrics={metrics}
+      filters={filters}
+      setFilters={setFilters}
+      rowKey={(record: User) => record.id}
+      loading={isLoading}
+      setStateQuery={setStateQuery}
+    />
+  );
+}
